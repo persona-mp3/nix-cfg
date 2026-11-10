@@ -1,6 +1,10 @@
 # Edit this configuration file to define what should be installed on your system.  Help is available in the configuration.nix(5) man page and in the NixOS manual (accessible by running 
 # ‘nixos-help’).
 
+# Dear viewer, I'm not a nix expert, but I use NIXOS why? Idk, just got tired of 
+# fedora breaking on every update or new install or because I have a mix of 
+# intel nvdia drivers things end up upside down. So be safe
+
 { config, pkgs, ... }:
 
 { imports =
@@ -59,7 +63,7 @@
   # Enable touchpad support (enabled default in most desktopManager). services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users."daniel" = { isNormalUser = true; description = "daniel"; extraGroups = [ "networkmanager" "wheel" ]; packages = with pkgs; [
+  users.users."daniel" = { isNormalUser = true; description = "daniel"; extraGroups = [ "networkmanager" "wheel" "docker" "video" ]; packages = with pkgs; [
       kdePackages.kate
     #  thunderbird
     ];
@@ -83,6 +87,7 @@
     nodejs_22 
     wget 
     jdk21
+		maven
 
     fish
     ripgrep
@@ -97,24 +102,38 @@
     wofi 
     dunst 
 
-   font-awesome
-   tmux
+    font-awesome
+    tmux
 
-   go
-   rustc
-   cargo 
+    go
+    rustc
 
-   libreoffice-qt
-   hunspell
-   hunspellDicts.uk_UA
-   hunspellDicts.th_TH
+    libreoffice-qt
+    hunspell
+    hunspellDicts.uk_UA
+    hunspellDicts.th_TH
 
-   vscodium
-   grim
+    grim
   
-   rustfmt
-   clippy
-   rust-analyzer
+    rustfmt
+    rust-analyzer
+
+	  pandoc
+
+	  zip
+	  unzip
+
+	  texlive.combined.scheme-medium
+    jq
+
+	  claude-code
+	  brightnessctl
+
+	  (python3.withPackages (p: [ p.numpy p.requests ]))
+
+	  vscodium
+    rustup
+
   ];
 
    programs.hyprland.enable = true;
@@ -145,13 +164,25 @@
 	];
   };
 
+	boot.kernelParams = [ "acpi_backlight=native" ];
   boot.kernelModules = ["v4l2loopback"];
   boot.extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
 
 
-  programs.vim = {
+  programs.neovim = {
 	  enable = true;
 	  defaultEditor = true;
   };
 
+	# environment.variables = {
+	# 	EDITOR=
+	# }
+
+	virtualisation.docker = {
+		enable = true;
+	};
+
+
+	# users.users.daniel.extraGroups = [ "docker" ];
 }
+
